@@ -4,7 +4,8 @@ import (
 	"errors"
 
 	"github.com/twilio/twilio-go"
-	twilioApi "github.com/twilio/twilio-go/rest/verify/v2"
+	twilioMessage "github.com/twilio/twilio-go/rest/api/v2010"
+	twilioVerify "github.com/twilio/twilio-go/rest/verify/v2"
 )
 
 var client *twilio.RestClient = twilio.NewRestClientWithParams(twilio.ClientParams{
@@ -13,7 +14,7 @@ var client *twilio.RestClient = twilio.NewRestClientWithParams(twilio.ClientPara
 })
 
 func (app *Config) twilioSendOTP(phoneNumber string) (string, error) {
-	params := &twilioApi.CreateVerificationParams{}
+	params := &twilioVerify.CreateVerificationParams{}
 	params.SetTo(phoneNumber)
 	params.SetChannel("sms")
 	resp, err := client.VerifyV2.CreateVerification(envSERVICESID(), params)
@@ -22,8 +23,9 @@ func (app *Config) twilioSendOTP(phoneNumber string) (string, error) {
 	}
 	return *resp.Sid, nil
 }
+
 func (app *Config) twilioVerifyOTP(phoneNumber string, code string) error {
-	params := &twilioApi.CreateVerificationCheckParams{}
+	params := &twilioVerify.CreateVerificationCheckParams{}
 	params.SetTo(phoneNumber)
 	params.SetCode(code)
 
@@ -36,3 +38,20 @@ func (app *Config) twilioVerifyOTP(phoneNumber string, code string) error {
 	}
 	return nil
 }
+func (app *Config) twilioSendMSGWithService(phoneNumber string, message string) error {
+	params := &twilioMessage.CreateMessageParams{}
+	params.SetTo(phoneNumber)
+	params.SetMessagingServiceSid(envMESSAGINGSERVICESID())
+	params.SetBody(message)
+
+	resp, err := client.Api.CreateMessage(params)
+	if err != nil {
+		return err
+	}
+
+	if resp.Status == nil || (*resp.Status != "queued" && *resp.Status != "sent") {
+		return errors.New("error sending message")
+	}
+	return nil
+}
+
