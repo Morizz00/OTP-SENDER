@@ -31,3 +31,10 @@ func envSERVICESID() string {
 	}
 	return os.Getenv("TWILIO_SERVICES_ID")
 }
+func envMESSAGINGSERVICESID() string {
+	err := godotenv.Load()
+	if err != nil {
+		log.Printf("Warning: TWILIO_MESSAGING_SERVICE_SID is not set")
+	}
+	return os.Getenv("TWILIO_MESSAGING_SERVICE_SID")
+}
