@@ -1,9 +1,19 @@
 package data
 
 type OTPData struct {
-	PhoneNumber string `json:"phoneNumber,omitempty" validate:"required"`
+	PhoneNumber string `json:"phone_number" validate:"required"`
 }
+
 type VerifyData struct {
-	User *OTPData `json:"user,omitempty" validate:"required"`
-	Code string   `json:"code,omitempty" validate:"required"`
+	User User   `json:"user" validate:"required"`
+	Code string `json:"code" validate:"required"`
+}
+
+type User struct {
+	PhoneNumber string `json:"phone_number" validate:"required"`
+}
+
+type SendMSGData struct {
+	PhoneNumber string `json:"phone_number" validate:"required"`
+	Message     string `json:"message" validate:"required"`
 }
